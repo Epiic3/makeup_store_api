@@ -1,12 +1,12 @@
 package com.makeupstore.services.products;
 
-import com.makeupstore.exceptions.AlreadyExistsException;
+import com.makeupstore.dtos.productdtos.CreateProductDto;
+import com.makeupstore.dtos.productdtos.UpdateProductDto;
 import com.makeupstore.exceptions.ResourceNotFoundException;
 import com.makeupstore.models.CategoryEntity;
 import com.makeupstore.models.ProductEntity;
 import com.makeupstore.repositories.CategoryRepository;
 import com.makeupstore.repositories.ProductRepository;
-import com.makeupstore.services.categories.ICategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -41,35 +41,72 @@ public class ProductService implements IProductService{
     }
 
     @Override
-    public List<ProductEntity> getProductsByCategoryName(String category) {
+    public List<ProductEntity> getProductsByCategory(String category) {
         return productRepository.findByCategoryName(category);
     }
 
     @Override
     public List<ProductEntity> getProductsByCategoryAndBrand(String category, String brand) {
-        return productRepository.findByCategorynameAndBrand(category, brand);
+        return productRepository.findByCategoryNameAndBrand(category, brand);
     }
 
     @Override
-    public ProductEntity addProduct(ProductEntity newProduct) {
-        CategoryEntity category = Optional.ofNullable(categoryRepository.findByName(newProduct.getCategory().getName()))
-                .orElseGet(() -> {
+    public ProductEntity addProduct(CreateProductDto newProduct) {
+        CategoryEntity category = Optional.ofNullable(categoryRepository.findByName(newProduct.getCategory().getName())).orElseGet(() -> {
                     CategoryEntity newCategory = new CategoryEntity(newProduct.getCategory().getName());
                     return categoryRepository.save(newCategory);
                 });
 
-        //Create and save the product with the new category
+        newProduct.setCategory(category);
+        return productRepository.save(createProduct(newProduct, category));
+    }
 
-        return productRepository.save(newProduct);
+    private ProductEntity createProduct(CreateProductDto productDto, CategoryEntity category) {
+        return new ProductEntity(
+                productDto.getName(),
+                productDto.getBrand(),
+                productDto.getPrice(),
+                productDto.getInventory(),
+                productDto.getDescription(),
+                category
+                );
     }
 
     @Override
-    public ProductEntity updateProduct(ProductEntity existingProduct) {
-        return null;
+    public ProductEntity updateProduct(UpdateProductDto productDto, Long productId) {
+        ProductEntity existingProduct = getProductById(productId);
+
+        updateExistingProduct(existingProduct, productDto);
+        return productRepository.save(existingProduct);
+    }
+
+    private void updateExistingProduct(ProductEntity existingProduct, UpdateProductDto productDto) {
+        existingProduct.setName(productDto.getName());
+        existingProduct.setBrand(productDto.getBrand());
+        existingProduct.setPrice(productDto.getPrice());
+        existingProduct.setInventory(productDto.getInventory());
+        existingProduct.setDescription(productDto.getDescription());
+
+        CategoryEntity category = categoryRepository.findByName(existingProduct.getCategory().getName());
+        existingProduct.setCategory(category);
     }
 
     @Override
     public void deleteProduct(Long id) {
-
+        productRepository.findById(id).ifPresentOrElse(productRepository::delete, () -> {
+            throw new ResourceNotFoundException("Product not found");
+        });
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+

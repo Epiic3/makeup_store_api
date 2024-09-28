@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -27,20 +28,30 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
+    public CategoryEntity getCategoryByName(String name) {
+        return categoryRepository.findByName(name);
+    }
+
+    @Override
     public CategoryEntity addCategory(CategoryEntity newCategory) {
-        if(categoryRepository.existsById(newCategory.getId()))
+        if(categoryRepository.existsByName(newCategory.getName()))
             throw new AlreadyExistsException("Category " + newCategory.getName() + " already exists");
 
         else return categoryRepository.save(newCategory);
     }
 
     @Override
-    public CategoryEntity updateCategory(CategoryEntity existingCategory) {
-        return null;
+    public CategoryEntity updateCategory(CategoryEntity newCategory, Long id) {
+        CategoryEntity existingCategory = getCategoryById(id);
+
+        existingCategory.setName(newCategory.getName());
+        return categoryRepository.save(existingCategory);
     }
 
     @Override
     public void deleteCategory(Long id) {
-
+        categoryRepository.findById(id).ifPresentOrElse(categoryRepository::delete, () -> {
+            throw new ResourceNotFoundException("Category not found");
+        });
     }
 }
