@@ -1,8 +1,6 @@
 package com.makeupstore.services.products;
 
 import com.makeupstore.dtos.productdtos.CreateProductDto;
-import com.makeupstore.dtos.productdtos.GetProductCategoryDto;
-import com.makeupstore.dtos.productdtos.GetProductDto;
 import com.makeupstore.dtos.productdtos.UpdateProductDto;
 import com.makeupstore.exceptions.ResourceNotFoundException;
 import com.makeupstore.models.CategoryEntity;
@@ -14,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,86 +20,45 @@ public class ProductService implements IProductService{
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
 
-    //Convert methods
-    private GetProductCategoryDto convertToProductCategoryDto(CategoryEntity category) {
-        return new GetProductCategoryDto(
-            category.getId(),
-            category.getName()
-        );
-    }
-
-    private GetProductDto convertToProductDto(ProductEntity product, GetProductCategoryDto productCategoryDto) {
-        return new GetProductDto(
-            product.getId(),
-            product.getName(),
-            product.getBrand(),
-            product.getPrice(),
-            product.getInventory(),
-            product.getDescription(),
-            productCategoryDto
-        );
+    @Override
+    public List<ProductEntity> getAllProducts() {
+        return productRepository.findAll();
     }
 
     @Override
-    public List<GetProductDto> getAllProducts() {
-        return productRepository.findAll().stream().map(product -> {
-            GetProductCategoryDto category = convertToProductCategoryDto(product.getCategory());
-            return convertToProductDto(product, category);
-        }).toList();
+    public ProductEntity getProductById(Long id) {
+        return productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product not found"));
     }
 
     @Override
-    public GetProductDto getProductById(Long id) {
-        return productRepository.findById(id).map(product -> {
-            GetProductCategoryDto category = convertToProductCategoryDto(product.getCategory());
-            return convertToProductDto(product, category);
-        }).orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+    public List<ProductEntity> getProductsByName(String name) {
+        return productRepository.findByName(name);
     }
 
     @Override
-    public List<GetProductDto> getProductsByName(String name) {
-        return productRepository.findByName(name).stream().map(product -> {
-            GetProductCategoryDto category = convertToProductCategoryDto(product.getCategory());
-            return convertToProductDto(product, category);
-        }).toList();
+    public List<ProductEntity> getProductsByBrand(String brand) {
+        return productRepository.findByBrand(brand);
     }
 
     @Override
-    public List<GetProductDto> getProductsByBrand(String brand) {
-        return productRepository.findByBrand(brand).stream().map(product -> {
-            GetProductCategoryDto category = convertToProductCategoryDto(product.getCategory());
-            return convertToProductDto(product, category);
-        }).toList();
+    public List<ProductEntity> getProductsByCategory(String categoryName) {
+        return productRepository.findByCategoryName(categoryName);
     }
 
     @Override
-    public List<GetProductDto> getProductsByCategory(String categoryName) {
-        return productRepository.findByCategoryName(categoryName).stream().map(product -> {
-            GetProductCategoryDto category = convertToProductCategoryDto(product.getCategory());
-            return convertToProductDto(product, category);
-        }).toList();
+    public List<ProductEntity> getProductsByCategoryAndBrand(String categoryName, String brand) {
+        return productRepository.findByCategoryNameAndBrand(categoryName, brand);
     }
 
     @Override
-    public List<GetProductDto> getProductsByCategoryAndBrand(String categoryName, String brand) {
-        return productRepository.findByCategoryNameAndBrand(categoryName, brand).stream().map(product -> {
-            GetProductCategoryDto category = convertToProductCategoryDto(product.getCategory());
-            return convertToProductDto(product, category);
-        }).toList();
-    }
-
-    @Override
-    public GetProductDto addProduct(CreateProductDto newProduct) {
+    public ProductEntity addProduct(CreateProductDto newProduct) {
         CategoryEntity category = Optional.ofNullable(categoryRepository.findByName(newProduct.getCategory().getName())).orElseGet(() -> {
             CategoryEntity newCategory = new CategoryEntity(newProduct.getCategory().getName());
             return categoryRepository.save(newCategory);
         });
 
         newProduct.setCategory(category);
-        ProductEntity addedProduct = productRepository.save(createProduct(newProduct, category));
-
-        GetProductCategoryDto convertedCategory = convertToProductCategoryDto(category);
-        return convertToProductDto(addedProduct, convertedCategory);
+        return productRepository.save(createProduct(newProduct, category));
     }
 
     private ProductEntity createProduct(CreateProductDto productDto, CategoryEntity category) {
@@ -117,14 +73,11 @@ public class ProductService implements IProductService{
     }
 
     @Override
-    public GetProductDto updateProduct(UpdateProductDto productDto, Long productId) {
+    public ProductEntity updateProduct(UpdateProductDto productDto, Long productId) {
         ProductEntity existingProduct = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
         updateExistingProduct(existingProduct, productDto);
-        productRepository.save(existingProduct);
-
-        GetProductCategoryDto category = convertToProductCategoryDto(existingProduct.getCategory());
-        return convertToProductDto(existingProduct, category);
+        return productRepository.save(existingProduct);
     }
 
     private void updateExistingProduct(ProductEntity existingProduct, UpdateProductDto productDto) {

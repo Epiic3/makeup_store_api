@@ -1,6 +1,5 @@
 package com.makeupstore.controllers;
 
-import com.makeupstore.dtos.categorydtos.GetCategoryDto;
 import com.makeupstore.exceptions.ResourceNotFoundException;
 import com.makeupstore.models.CategoryEntity;
 import com.makeupstore.response.ApiResponse;
@@ -22,7 +21,7 @@ public class CategoryController {
     @GetMapping("/all")
     public ResponseEntity<ApiResponse> getAllCategories() {
         try {
-            List<GetCategoryDto> categories = categoryService.getAllCategories();
+            List<CategoryEntity> categories = categoryService.getAllCategories();
             return ResponseEntity.ok(new ApiResponse("success", 200, categories));
         } catch(Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null));
@@ -32,7 +31,7 @@ public class CategoryController {
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse> getCategoryById(@PathVariable Long id) {
         try {
-            GetCategoryDto category = categoryService.getCategoryById(id);
+            CategoryEntity category = categoryService.getCategoryById(id);
             return ResponseEntity.ok(new ApiResponse("success", 200, category));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(e.getMessage(), HttpStatus.NOT_FOUND, null));
@@ -44,7 +43,7 @@ public class CategoryController {
     @GetMapping("/by/name")
     public ResponseEntity<ApiResponse> getCategoryByName(@RequestParam String name) {
         try {
-            GetCategoryDto category = categoryService.getCategoryByName(name);
+            CategoryEntity category = categoryService.getCategoryByName(name);
             return ResponseEntity.ok(new ApiResponse("success", HttpStatus.ACCEPTED, category));
         } catch(Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null));
@@ -54,7 +53,7 @@ public class CategoryController {
     @PostMapping("/add")
     public ResponseEntity<ApiResponse> addCategory(@RequestBody CategoryEntity category) {
         try {
-            GetCategoryDto newCategory = categoryService.addCategory(category);
+            CategoryEntity newCategory = categoryService.addCategory(category);
             return ResponseEntity.ok(new ApiResponse("success", HttpStatus.CREATED, newCategory));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null));

@@ -1,7 +1,6 @@
 package com.makeupstore.controllers;
 
 import com.makeupstore.dtos.productdtos.CreateProductDto;
-import com.makeupstore.dtos.productdtos.GetProductDto;
 import com.makeupstore.dtos.productdtos.UpdateProductDto;
 import com.makeupstore.exceptions.ResourceNotFoundException;
 import com.makeupstore.models.ProductEntity;
@@ -24,7 +23,7 @@ public class ProductController {
     @GetMapping("/all")
     public ResponseEntity<ApiResponse> getAllProducts() {
         try {
-            List<GetProductDto> products = productService.getAllProducts();
+            List<ProductEntity> products = productService.getAllProducts();
             return ResponseEntity.ok(new ApiResponse("success", 200, products));
         } catch(Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null));
@@ -34,7 +33,7 @@ public class ProductController {
     @RequestMapping("/{id}")
     public ResponseEntity<ApiResponse> getProductsById(@PathVariable Long id) {
         try {
-            GetProductDto product = productService.getProductById(id);
+            ProductEntity product = productService.getProductById(id);
             return ResponseEntity.ok(new ApiResponse("success", 200, product));
         } catch(ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse("Resource not found", HttpStatus.NOT_FOUND, null));
@@ -47,7 +46,7 @@ public class ProductController {
     @GetMapping("/by/name")
     public ResponseEntity<ApiResponse> getProductsByName(@RequestParam String name) {
         try {
-            List<GetProductDto> products = productService.getProductsByName(name);
+            List<ProductEntity> products = productService.getProductsByName(name);
             return ResponseEntity.ok(new ApiResponse("success", 200, products));
         } catch(Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null));
@@ -57,7 +56,7 @@ public class ProductController {
     @GetMapping("/by/brand")
     public ResponseEntity<ApiResponse> getProductsByBrand(@RequestParam String brand) {
         try {
-            List<GetProductDto> products = productService.getProductsByBrand(brand);
+            List<ProductEntity> products = productService.getProductsByBrand(brand);
             return ResponseEntity.ok(new ApiResponse("success", 200, products));
         } catch(Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null));
@@ -67,7 +66,7 @@ public class ProductController {
     @GetMapping("/by/category")
     public ResponseEntity<ApiResponse> getProductsByCategoryName(@RequestParam String category) {
         try {
-            List<GetProductDto> products = productService.getProductsByCategory(category);
+            List<ProductEntity> products = productService.getProductsByCategory(category);
             return ResponseEntity.ok(new ApiResponse("success", 200, products));
         } catch(Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null));
@@ -77,7 +76,7 @@ public class ProductController {
     @GetMapping("/by/category-and-brand")
     public ResponseEntity<ApiResponse> getProductsByCategoryAndBrand(@RequestParam String category, @RequestParam String brand) {
         try {
-            List<GetProductDto> products = productService.getProductsByCategoryAndBrand(category, brand);
+            List<ProductEntity> products = productService.getProductsByCategoryAndBrand(category, brand);
             return ResponseEntity.ok(new ApiResponse("success", 200, products));
         } catch(Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null));
@@ -87,7 +86,7 @@ public class ProductController {
     @PostMapping("/add")
     public ResponseEntity<ApiResponse> addProduct(@RequestBody CreateProductDto productDto) {
         try {
-            GetProductDto newProduct = productService.addProduct(productDto);
+            ProductEntity newProduct = productService.addProduct(productDto);
             return ResponseEntity.ok(new ApiResponse("success", HttpStatus.CREATED, newProduct));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null));
@@ -97,7 +96,7 @@ public class ProductController {
     @PatchMapping("/update/{id}")
     public ResponseEntity<ApiResponse> updateProduct(@RequestBody UpdateProductDto productDto, @PathVariable Long id) {
         try {
-            GetProductDto updatedProduct = productService.updateProduct(productDto, id);
+            ProductEntity updatedProduct = productService.updateProduct(productDto, id);
             return ResponseEntity.ok(new ApiResponse("success", 200, updatedProduct));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse("Resource not found", HttpStatus.NOT_FOUND, null));
