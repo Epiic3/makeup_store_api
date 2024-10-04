@@ -1,5 +1,8 @@
 package com.makeupstore.services.transactions;
 
+import com.makeupstore.dtos.transactiondtos.CreateTransactionDto;
+import com.makeupstore.dtos.transactiondtos.GetTransactionAndItemsDto;
+import com.makeupstore.dtos.transactiondtos.GetTransactionDto;
 import com.makeupstore.dtos.transactionitemdtos.CreateTransactionItemDto;
 import com.makeupstore.dtos.transactionitemdtos.GetTransactionItemDto;
 import com.makeupstore.dtos.transactionitemdtos.UpdateTransactionItemDto;
@@ -9,12 +12,9 @@ import java.util.List;
 import java.util.Set;
 
 public interface ITransactionService {
-    List<TransactionEntity> getAllTransactions();
-    TransactionEntity getTransactionById(Long id);
+    List<GetTransactionDto> getAllTransactions();
+    GetTransactionAndItemsDto getTransactionById(Long id);
     Set<GetTransactionItemDto> getItemsByTransactionId(Long id);
-    GetTransactionItemDto addTransactionItem(CreateTransactionItemDto newItem);
-    GetTransactionItemDto updateTransactionItem(UpdateTransactionItemDto itemDto, Long itemId);
-    void deleteTransactionItem(Long itemId);
-    TransactionEntity addTransaction();
+    GetTransactionAndItemsDto addTransaction(CreateTransactionDto transactionDto);
     void deleteTransaction(Long transactionId);
 }

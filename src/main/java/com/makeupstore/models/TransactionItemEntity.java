@@ -33,10 +33,8 @@ public class TransactionItemEntity {
     @JoinColumn(name = "product_id")
     private ProductEntity product;
 
-    public BigDecimal setTotalPrice() {
-        if (product != null && quantity > 0)
-            return totalPrice = product.getPrice().multiply(BigDecimal.valueOf(quantity));
-
-        return totalPrice = BigDecimal.ZERO;
+    public void setTotalPriceM() {
+        if (product != null && quantity > 0) totalPrice = product.getPrice().multiply(BigDecimal.valueOf(quantity));
+        else totalPrice = BigDecimal.ZERO;
     }
 }

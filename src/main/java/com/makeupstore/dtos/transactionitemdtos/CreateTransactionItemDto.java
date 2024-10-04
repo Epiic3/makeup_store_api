@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateTransactionItemDto {
-    private int quantity = 1;
+    private int quantity;
     private Long productId;
-    private Long transactionId;
 }
