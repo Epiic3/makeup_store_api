@@ -13,6 +13,7 @@ import com.makeupstore.models.TransactionItemEntity;
 import com.makeupstore.models.UserEntity;
 import com.makeupstore.repositories.TransactionRepository;
 import com.makeupstore.services.products.ProductService;
+import com.makeupstore.services.users.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,7 @@ public class TransactionService implements ITransactionService {
 
     private final TransactionRepository transactionRepository;
     private final ProductService productService;
+    private final UserService userService;
 
     @Override
     public List<GetTransactionDto> getAllTransactions() {
@@ -45,6 +47,7 @@ public class TransactionService implements ITransactionService {
         return new GetTransactionAndItemsDto(transaction.getId(), transaction.getCreatedAt(), transaction.getTotalAmount(), items, transaction.getCreatedBy().getName());
     }
 
+    //Deprecated
     @Override
     public Set<GetTransactionItemDto> getItemsByTransactionId(Long id) {
         return transactionRepository.findItemsByTransactionId(id);
@@ -73,7 +76,10 @@ public class TransactionService implements ITransactionService {
 
         newTransaction.setTransactionItems(itemsToSave); //Agregarle los items a la transaccion
         newTransaction.setTotalAmount(transactionDto.setTotalAmountM(itemsToSave)); //Settear el precio total de la transaccion
-        newTransaction.setCreatedBy(transactionDto.getCreatedBy());
+
+        //Find the user who made the transaction
+        UserEntity createdBy = userService.getUserById(transactionDto.getCreatedById());
+        newTransaction.setCreatedBy(createdBy);
 
         //Guardar la transaccion en el repositorio
         transactionRepository.save(newTransaction);
@@ -83,7 +89,7 @@ public class TransactionService implements ITransactionService {
                 .map(i -> new GetTransactionItemDto(i.getId(), i.getQuantity(), i.getTotalPrice(), i.getTransaction().getId(), i.getProduct()))
                 .collect(Collectors.toSet());
 
-        return new GetTransactionAndItemsDto(newTransaction.getId(), newTransaction.getCreatedAt(), newTransaction.getTotalAmount(), items, transactionDto.getCreatedBy().getName());
+        return new GetTransactionAndItemsDto(newTransaction.getId(), newTransaction.getCreatedAt(), newTransaction.getTotalAmount(), items, createdBy.getName());
     }
 
     @Override

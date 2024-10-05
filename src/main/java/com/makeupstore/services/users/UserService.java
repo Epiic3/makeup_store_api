@@ -3,6 +3,7 @@ package com.makeupstore.services.users;
 import com.makeupstore.dtos.userdtos.UpdateUserDto;
 import com.makeupstore.exceptions.ResourceNotFoundException;
 import com.makeupstore.models.UserEntity;
+import com.makeupstore.repositories.RoleRepository;
 import com.makeupstore.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.util.List;
 public class UserService implements IUserService {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
     @Override
     public List<UserEntity> getAllUsers() {

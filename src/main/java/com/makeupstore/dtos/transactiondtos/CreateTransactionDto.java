@@ -11,7 +11,7 @@ import java.util.Set;
 @Data
 public class CreateTransactionDto {
     private Set<CreateTransactionItemDto> items;
-    private UserEntity createdBy;
+    private Long createdById;
 
     public BigDecimal setTotalAmountM(Set<TransactionItemEntity> items) {
         BigDecimal totalAmount = BigDecimal.ZERO;

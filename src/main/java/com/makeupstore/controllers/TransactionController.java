@@ -12,6 +12,7 @@ import com.makeupstore.services.transactions.ITransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class TransactionController {
 
     private final ITransactionService transactionService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<ApiResponse> getAllTransactions() {
         try {
@@ -34,6 +36,8 @@ public class TransactionController {
         }
     }
 
+    //Deprecated
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all/items/{transactionId}")
     public ResponseEntity<ApiResponse> getItemsByTransactionId(@PathVariable Long transactionId) {
         try {
@@ -46,6 +50,7 @@ public class TransactionController {
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse> getTransactionById(@PathVariable Long id) {
         try {
@@ -68,6 +73,7 @@ public class TransactionController {
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<ApiResponse> deleteTransaction(@PathVariable Long id) {
         try {

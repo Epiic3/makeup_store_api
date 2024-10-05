@@ -2,6 +2,7 @@ package com.makeupstore.controllers;
 
 import com.makeupstore.dtos.productdtos.CreateProductDto;
 import com.makeupstore.dtos.productdtos.UpdateProductDto;
+import com.makeupstore.exceptions.AlreadyExistsException;
 import com.makeupstore.exceptions.ResourceNotFoundException;
 import com.makeupstore.models.ProductEntity;
 import com.makeupstore.response.ApiResponse;
@@ -84,16 +85,20 @@ public class ProductController {
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/add")
     public ResponseEntity<ApiResponse> addProduct(@RequestBody CreateProductDto productDto) {
         try {
             ProductEntity newProduct = productService.addProduct(productDto);
             return ResponseEntity.ok(new ApiResponse("success", HttpStatus.CREATED, newProduct));
+        } catch(AlreadyExistsException e) {
+            return ResponseEntity.status(409).body(new ApiResponse(e.getMessage(), 409, null));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null));
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/update/{id}")
     public ResponseEntity<ApiResponse> updateProduct(@RequestBody UpdateProductDto productDto, @PathVariable Long id) {
         try {

@@ -24,6 +24,7 @@ public class ProductEntity {
     private String name;
 
     private String brand;
+    private String uniqueName;
     private BigDecimal price;
     private int inventory = 0;
     private String description;
@@ -36,6 +37,7 @@ public class ProductEntity {
     public ProductEntity(String name, String brand, BigDecimal price, int inventory, String description, CategoryEntity category) {
         this.name = name;
         this.brand = brand;
+        this.uniqueName = name + brand;
         this.price = price;
         this.inventory = inventory;
         this.description = description;

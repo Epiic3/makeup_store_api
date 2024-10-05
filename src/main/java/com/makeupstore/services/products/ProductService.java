@@ -2,6 +2,7 @@ package com.makeupstore.services.products;
 
 import com.makeupstore.dtos.productdtos.CreateProductDto;
 import com.makeupstore.dtos.productdtos.UpdateProductDto;
+import com.makeupstore.exceptions.AlreadyExistsException;
 import com.makeupstore.exceptions.ResourceNotFoundException;
 import com.makeupstore.models.CategoryEntity;
 import com.makeupstore.models.ProductEntity;
@@ -52,6 +53,10 @@ public class ProductService implements IProductService{
 
     @Override
     public ProductEntity addProduct(CreateProductDto newProduct) {
+        String uniqueName = newProduct.getName() + newProduct.getBrand();
+        if(productRepository.existsByUniqueName(uniqueName))
+            throw new AlreadyExistsException("Product already exists, you should update the product");
+
         CategoryEntity category = Optional.ofNullable(categoryRepository.findByName(newProduct.getCategory().getName())).orElseGet(() -> {
             CategoryEntity newCategory = new CategoryEntity(newProduct.getCategory().getName());
             return categoryRepository.save(newCategory);
@@ -83,6 +88,7 @@ public class ProductService implements IProductService{
     private void updateExistingProduct(ProductEntity existingProduct, UpdateProductDto productDto) {
         existingProduct.setName(productDto.getName());
         existingProduct.setBrand(productDto.getBrand());
+        existingProduct.setUniqueName(productDto.getName() + productDto.getBrand());
         existingProduct.setPrice(productDto.getPrice());
         existingProduct.setInventory(productDto.getInventory());
         existingProduct.setDescription(productDto.getDescription());
