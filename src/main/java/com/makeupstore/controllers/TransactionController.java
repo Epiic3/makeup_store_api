@@ -6,6 +6,7 @@ import com.makeupstore.dtos.transactiondtos.GetTransactionDto;
 import com.makeupstore.dtos.transactionitemdtos.GetTransactionItemDto;
 import com.makeupstore.exceptions.ResourceNotFoundException;
 import com.makeupstore.models.TransactionEntity;
+import com.makeupstore.models.UserEntity;
 import com.makeupstore.response.ApiResponse;
 import com.makeupstore.services.transactions.ITransactionService;
 import lombok.RequiredArgsConstructor;

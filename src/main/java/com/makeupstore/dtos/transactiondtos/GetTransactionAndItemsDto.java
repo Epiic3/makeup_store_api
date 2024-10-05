@@ -15,4 +15,5 @@ public class GetTransactionAndItemsDto {
     private Date createdAt;
     private BigDecimal totalAmount;
     private Set<GetTransactionItemDto> items;
+    private String createdBy;
 }

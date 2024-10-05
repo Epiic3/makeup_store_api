@@ -7,6 +7,7 @@ import com.makeupstore.dtos.transactionitemdtos.CreateTransactionItemDto;
 import com.makeupstore.dtos.transactionitemdtos.GetTransactionItemDto;
 import com.makeupstore.dtos.transactionitemdtos.UpdateTransactionItemDto;
 import com.makeupstore.models.TransactionEntity;
+import com.makeupstore.models.UserEntity;
 
 import java.util.List;
 import java.util.Set;

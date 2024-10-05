@@ -10,6 +10,7 @@ import com.makeupstore.exceptions.ResourceNotFoundException;
 import com.makeupstore.models.ProductEntity;
 import com.makeupstore.models.TransactionEntity;
 import com.makeupstore.models.TransactionItemEntity;
+import com.makeupstore.models.UserEntity;
 import com.makeupstore.repositories.TransactionRepository;
 import com.makeupstore.services.products.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +42,7 @@ public class TransactionService implements ITransactionService {
                 .map(i -> new GetTransactionItemDto(i.getId(), i.getQuantity(), i.getTotalPrice(), i.getTransaction().getId(), i.getProduct()))
                 .collect(Collectors.toSet());
 
-        return new GetTransactionAndItemsDto(transaction.getId(), transaction.getCreatedAt(), transaction.getTotalAmount(), items);
+        return new GetTransactionAndItemsDto(transaction.getId(), transaction.getCreatedAt(), transaction.getTotalAmount(), items, transaction.getCreatedBy().getName());
     }
 
     @Override
@@ -72,6 +73,7 @@ public class TransactionService implements ITransactionService {
 
         newTransaction.setTransactionItems(itemsToSave); //Agregarle los items a la transaccion
         newTransaction.setTotalAmount(transactionDto.setTotalAmountM(itemsToSave)); //Settear el precio total de la transaccion
+        newTransaction.setCreatedBy(transactionDto.getCreatedBy());
 
         //Guardar la transaccion en el repositorio
         transactionRepository.save(newTransaction);
@@ -81,7 +83,7 @@ public class TransactionService implements ITransactionService {
                 .map(i -> new GetTransactionItemDto(i.getId(), i.getQuantity(), i.getTotalPrice(), i.getTransaction().getId(), i.getProduct()))
                 .collect(Collectors.toSet());
 
-        return new GetTransactionAndItemsDto(newTransaction.getId(), newTransaction.getCreatedAt(), newTransaction.getTotalAmount(), items);
+        return new GetTransactionAndItemsDto(newTransaction.getId(), newTransaction.getCreatedAt(), newTransaction.getTotalAmount(), items, transactionDto.getCreatedBy().getName());
     }
 
     @Override

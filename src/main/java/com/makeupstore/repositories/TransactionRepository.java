@@ -11,11 +11,11 @@ import java.util.Set;
 
 public interface TransactionRepository extends JpaRepository<TransactionEntity, Long> {
 
+    @Query("SELECT new com.makeupstore.dtos.transactiondtos.GetTransactionDto(t.id, t.createdAt, t.totalAmount, SIZE(t.transactionItems),  t.createdBy.name) " +
+            "FROM TransactionEntity t")
+    List<GetTransactionDto> findAllTransactions();
+
     @Query("SELECT new com.makeupstore.dtos.transactionitemdtos.GetTransactionItemDto(i.id, i.quantity, i.totalPrice, i.transaction.id, i.product) " +
            "FROM TransactionItemEntity i WHERE i.transaction.id = :transactionId")
     Set<GetTransactionItemDto> findItemsByTransactionId(Long transactionId);
-
-    @Query("SELECT new com.makeupstore.dtos.transactiondtos.GetTransactionDto(t.id, t.createdAt, t.totalAmount, SIZE(t.transactionItems)) " +
-            "FROM TransactionEntity t")
-    List<GetTransactionDto> findAllTransactions();
 }

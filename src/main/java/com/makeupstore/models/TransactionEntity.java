@@ -29,4 +29,8 @@ public class TransactionEntity {
 
     @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<TransactionItemEntity> transactionItems;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserEntity createdBy;
 }
